@@ -14,6 +14,8 @@ namespace SamsysDemo.Infrastructure.Interfaces.Repositories
         Task<Client?> GetById(object id, string[]? includedProperties = null);
         Task Insert(Client entityToInsert);
         void Update(Client entityToUpdate, string concurrencyToken);
-        Task Delete(object id, string userDelete, string concurrencyToken);       
+        Task Delete(object id, string userDelete, string concurrencyToken);
+        Task<IList<Client>> GetAll();
+        Task<IList<Client>> GetAllByPage(int pageNumber, int pageSize);
     }
 }

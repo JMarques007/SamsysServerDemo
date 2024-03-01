@@ -18,6 +18,9 @@ namespace SamsysDemo.DAL.Repositories
         public ClientRepository(ApplicationDbContext context) 
         {
             _context = context;
+            // Log connection string during initialization
+            var connectionString = _context.Database.GetDbConnection().ConnectionString;
+            Console.WriteLine("Connection String: " + connectionString);
         }     
 
         public async Task Delete(object id, string userDelete, string concurrencyToken)
@@ -32,7 +35,25 @@ namespace SamsysDemo.DAL.Repositories
                     _context.Entry(entityToDelete).Property("ConcurrencyToken").OriginalValue = Convert.FromBase64String(concurrencyToken);
                 }
             }
-        }    
+        }
+
+        public async Task<IList<Client>> GetAll()
+        {
+            var items = await _context.Clients.ToListAsync();
+            return items;
+        }
+
+        public async Task<IList<Client>> GetAllByPage(int pageNumber, int pageSize)
+        {
+            var items = await _context.Clients
+                               .Skip((pageNumber - 1) * pageSize) // Skip records based on page number
+                               .Take(pageSize) // Take records for the current page
+                               .ToListAsync();
+
+            return items;
+
+        }
+        
 
         public async Task<Client?> GetById(object id, string[]? includedProperties = null)
         {
@@ -50,6 +71,7 @@ namespace SamsysDemo.DAL.Repositories
                 }
             }
             return item;
+
         }
 
         public async Task Insert(Client entityToInsert)

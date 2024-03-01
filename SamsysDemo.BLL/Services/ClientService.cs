@@ -139,5 +139,72 @@ namespace SamsysDemo.BLL.Services
                 return response;
             }
         }
+
+        public async Task<MessagingHelper<IList<ClientDTO>>> GetClientsByPage(int pageNumber, int pageSize)
+        {
+            MessagingHelper<IList<ClientDTO>> response = new();
+            try
+            {
+                IList<Client> clients = await _unitOfWork.ClientRepository.GetAllByPage(pageNumber,pageSize);
+                if (clients == null || clients.Count == 0)
+                {
+                    response.SetMessage("O cliente não existe.");
+                    response.Success = false;
+                    return response;
+                }
+
+                IList<ClientDTO> clientDTOs = new List<ClientDTO>();
+                foreach (var client in clients)
+                {
+                    var clientDTO = new ClientDTO
+                    {
+                        
+                        Id = client.Id,
+                        Name = client.Name,
+                        IsActive=client.IsActive,
+                        PhoneNumber=client.PhoneNumber
+                        
+                    };
+                    clientDTOs.Add(clientDTO);
+                }
+
+                response.Obj = clientDTOs;
+                response.Success = true;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.SetMessage($"Ocorreu um erro inesperado ao obter o cliente.");
+                return response;
+            }
+        }
+
+        public async Task<MessagingHelper> CreateClient(NewClientDTO newClientDTO)
+        {
+            MessagingHelper<Client> response = new();
+            try
+            {
+                Client client = new()
+                {
+                    IsActive = true,
+                    PhoneNumber = newClientDTO.PhoneNumber,
+                    IsRemoved = false,
+                    Name = newClientDTO.Name
+                };
+
+                await _unitOfWork.ClientRepository.Insert(client);
+                await _unitOfWork.SaveAsync();
+                response.Success = true;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.SetMessage($"Ocorreu um erro inesperado ao criar o cliente. Tente novamente.");
+                return response;
+            }
+
+        }
     }
 }

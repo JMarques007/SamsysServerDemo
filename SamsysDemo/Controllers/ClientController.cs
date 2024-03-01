@@ -17,6 +17,12 @@ namespace SamsysDemo.Controllers
             _clientService = clientService;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ClientDTO>>> GetClientsByPage(int pageNumber, int pageSize)
+        {
+            var clients = await _clientService.GetClientsByPage(pageNumber, pageSize);
+            return Ok(clients);
+        }
 
         [HttpGet("{id}")]
         public async Task<MessagingHelper<ClientDTO>> Get(long id)
@@ -41,5 +47,13 @@ namespace SamsysDemo.Controllers
         {
             return await _clientService.DisableClient(id);
         }
+
+        [HttpPost]
+        public async Task<MessagingHelper> Post(NewClientDTO newClientDTO)
+        {
+            return await _clientService.CreateClient(newClientDTO);
+           
+        }
+
     }
 }
