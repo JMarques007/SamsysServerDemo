@@ -174,11 +174,11 @@ namespace SamsysDemo.BLL.Services
 
                 ListClientPagedDTO listClientsDTO = new ListClientPagedDTO
                 {
-                    clients = clientDTOs,
-                    totalPages = totalCount
+                    Items = (List<ClientDTO>)clientDTOs,
+                    TotalRecords = totalCount,
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
                 };
-                    
-                    
 
                 response.Obj = listClientsDTO;
                 response.Success = true;
@@ -203,7 +203,7 @@ namespace SamsysDemo.BLL.Services
                     PhoneNumber = newClientDTO.PhoneNumber,
                     IsRemoved = false,
                     Name = newClientDTO.Name,
-                    Birthday = newClientDTO.Birthday
+                    Birthday = newClientDTO.BirthDate
                 };
 
                 await _unitOfWork.ClientRepository.Insert(client);
