@@ -203,7 +203,7 @@ namespace SamsysDemo.BLL.Services
                     PhoneNumber = newClientDTO.PhoneNumber,
                     IsRemoved = false,
                     Name = newClientDTO.Name,
-                    Birthday = newClientDTO.BirthDate
+                    Birthday = newClientDTO.Birthday
                 };
 
                 await _unitOfWork.ClientRepository.Insert(client);
