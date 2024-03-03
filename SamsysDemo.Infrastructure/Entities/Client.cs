@@ -28,10 +28,13 @@ namespace SamsysDemo.Infrastructure.Entities
 
         public DateTime? DateRemoved { get; set; }
 
-        public void Update(string name, string phoneNumber)
+       public DateTime?  Birthday { get; set; }
+
+    public void Update(string name, string phoneNumber,DateTime? birthday)
         {
             Name = name;
             PhoneNumber = phoneNumber;
+            Birthday = birthday;
         }
 
         public void SetStatus(bool status)

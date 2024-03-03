@@ -42,7 +42,8 @@ namespace SamsysDemo.BLL.Services
                     IsActive = client.IsActive,
                     ConcurrencyToken = Convert.ToBase64String(client.ConcurrencyToken),
                     Name = client.Name,
-                    PhoneNumber = client.PhoneNumber
+                    PhoneNumber = client.PhoneNumber,
+                    Birthday = client.Birthday ,
                 };
                 response.Success = true;
                 return response;
@@ -67,7 +68,8 @@ namespace SamsysDemo.BLL.Services
                     response.Success = false;
                     return response;
                 }
-                client.Update(clientToUpdate.Name, clientToUpdate.PhoneNumber);
+
+                client.Update(clientToUpdate.Name, clientToUpdate.PhoneNumber, clientToUpdate.Birthday);
                 _unitOfWork.ClientRepository.Update(client, clientToUpdate.ConcurrencyToken);
                 await _unitOfWork.SaveAsync();
                 response.Success = true;
@@ -140,15 +142,16 @@ namespace SamsysDemo.BLL.Services
             }
         }
 
-        public async Task<MessagingHelper<IList<ClientDTO>>> GetClientsByPage(int pageNumber, int pageSize)
+        public async Task<MessagingHelper<ListClientPagedDTO>> GetClientsByPage(int pageNumber, int pageSize, string searchTerm)
         {
-            MessagingHelper<IList<ClientDTO>> response = new();
+            MessagingHelper<ListClientPagedDTO> response = new();
             try
             {
-                IList<Client> clients = await _unitOfWork.ClientRepository.GetAllByPage(pageNumber,pageSize);
-                if (clients == null || clients.Count == 0)
+                var (clients, totalCount) = await _unitOfWork.ClientRepository.GetAllByPage(pageNumber,pageSize, searchTerm);
+                
+                    if (clients == null || clients.Count == 0)
                 {
-                    response.SetMessage("O cliente não existe.");
+                    response.SetMessage("Não existem clientes.");
                     response.Success = false;
                     return response;
                 }
@@ -162,13 +165,22 @@ namespace SamsysDemo.BLL.Services
                         Id = client.Id,
                         Name = client.Name,
                         IsActive=client.IsActive,
-                        PhoneNumber=client.PhoneNumber
+                        PhoneNumber=client.PhoneNumber,
+                        Birthday=client.Birthday,
                         
                     };
                     clientDTOs.Add(clientDTO);
                 }
 
-                response.Obj = clientDTOs;
+                ListClientPagedDTO listClientsDTO = new ListClientPagedDTO
+                {
+                    clients = clientDTOs,
+                    totalPages = totalCount
+                };
+                    
+                    
+
+                response.Obj = listClientsDTO;
                 response.Success = true;
                 return response;
             }
@@ -190,7 +202,8 @@ namespace SamsysDemo.BLL.Services
                     IsActive = true,
                     PhoneNumber = newClientDTO.PhoneNumber,
                     IsRemoved = false,
-                    Name = newClientDTO.Name
+                    Name = newClientDTO.Name,
+                    Birthday = newClientDTO.Birthday
                 };
 
                 await _unitOfWork.ClientRepository.Insert(client);

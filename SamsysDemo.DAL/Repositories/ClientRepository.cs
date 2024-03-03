@@ -43,17 +43,21 @@ namespace SamsysDemo.DAL.Repositories
             return items;
         }
 
-        public async Task<IList<Client>> GetAllByPage(int pageNumber, int pageSize)
+        public async Task<(IList<Client>, int)> GetAllByPage(int pageNumber, int pageSize, string name)
         {
+            var totalItems = await _context.Clients
+                                            .Where(c => string.IsNullOrEmpty(name) || c.Name.Contains(name))
+                                            .CountAsync();
+
             var items = await _context.Clients
-                               .Skip((pageNumber - 1) * pageSize) // Skip records based on page number
-                               .Take(pageSize) // Take records for the current page
-                               .ToListAsync();
+                                        .Where(c => string.IsNullOrEmpty(name) || c.Name.Contains(name))
+                                        .Skip((pageNumber - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToListAsync();
 
-            return items;
-
+            return (items, totalItems);
         }
-        
+
 
         public async Task<Client?> GetById(object id, string[]? includedProperties = null)
         {

@@ -18,9 +18,9 @@ namespace SamsysDemo.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClientDTO>>> GetClientsByPage(int pageNumber, int pageSize)
+        public async Task<ActionResult<ListClientPagedDTO>> GetClientsByPage(int pageNumber, int pageSize, string searchTerm="")
         {
-            var clients = await _clientService.GetClientsByPage(pageNumber, pageSize);
+            var clients = await _clientService.GetClientsByPage(pageNumber, pageSize, searchTerm);
             return Ok(clients);
         }
 

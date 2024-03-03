@@ -16,6 +16,6 @@ namespace SamsysDemo.Infrastructure.Interfaces.Repositories
         void Update(Client entityToUpdate, string concurrencyToken);
         Task Delete(object id, string userDelete, string concurrencyToken);
         Task<IList<Client>> GetAll();
-        Task<IList<Client>> GetAllByPage(int pageNumber, int pageSize);
+        Task<(IList<Client>, int)> GetAllByPage(int pageNumber, int pageSize, string searchTerm);
     }
 }
