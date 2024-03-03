@@ -32,7 +32,7 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
@@ -51,7 +51,7 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inesperado ao obter o cliente.");
+                response.SetMessage($"An unexpected error occurred while getting the client.");
                 return response;
             }
         }
@@ -64,7 +64,7 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
@@ -79,13 +79,13 @@ namespace SamsysDemo.BLL.Services
             catch (DbUpdateConcurrencyException exce)
             {
                 response.Success = false;
-                response.SetMessage($"Os dados do cliente foram atualizados posteriormente por outro utilizador!.");
+                response.SetMessage($"The customer data was later updated by another user!.");
                 return response;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inesperado ao atualizar o cliente. Tente novamente.");
+                response.SetMessage($"An unexpected error occurred while updating the client. Try again.");
                 return response;
             }
         }
@@ -98,7 +98,7 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
@@ -111,7 +111,7 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inativar o cliente.");
+                response.SetMessage($"An error occurred inactivating the client.");
                 return response;
             }
         }
@@ -124,7 +124,7 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
@@ -137,7 +137,7 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro ativar o cliente.");
+                response.SetMessage($"An error occurred activating the client.");
                 return response;
             }
         }
@@ -151,7 +151,7 @@ namespace SamsysDemo.BLL.Services
                 
                     if (clients == null || clients.Count == 0)
                 {
-                    response.SetMessage("Não existem clientes.");
+                    response.SetMessage("There are no customers.");
                     response.Success = false;
                     return response;
                 }
@@ -187,7 +187,7 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inesperado ao obter o cliente.");
+                response.SetMessage($"An unexpected error occurred while getting the client.");
                 return response;
             }
         }
@@ -214,7 +214,7 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inesperado ao criar o cliente. Tente novamente.");
+                response.SetMessage($"An unexpected error occurred while creating the client. Try again.");
                 return response;
             }
 
