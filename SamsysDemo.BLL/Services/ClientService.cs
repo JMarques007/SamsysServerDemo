@@ -32,7 +32,7 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
@@ -42,7 +42,8 @@ namespace SamsysDemo.BLL.Services
                     IsActive = client.IsActive,
                     ConcurrencyToken = Convert.ToBase64String(client.ConcurrencyToken),
                     Name = client.Name,
-                    PhoneNumber = client.PhoneNumber
+                    PhoneNumber = client.PhoneNumber,
+                    Birthday = client.Birthday ,
                 };
                 response.Success = true;
                 return response;
@@ -50,7 +51,7 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inesperado ao obter o cliente.");
+                response.SetMessage($"An unexpected error occurred while getting the client.");
                 return response;
             }
         }
@@ -63,11 +64,12 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
-                client.Update(clientToUpdate.Name, clientToUpdate.PhoneNumber);
+
+                client.Update(clientToUpdate.Name, clientToUpdate.PhoneNumber, clientToUpdate.Birthday);
                 _unitOfWork.ClientRepository.Update(client, clientToUpdate.ConcurrencyToken);
                 await _unitOfWork.SaveAsync();
                 response.Success = true;
@@ -77,13 +79,13 @@ namespace SamsysDemo.BLL.Services
             catch (DbUpdateConcurrencyException exce)
             {
                 response.Success = false;
-                response.SetMessage($"Os dados do cliente foram atualizados posteriormente por outro utilizador!.");
+                response.SetMessage($"The customer data was later updated by another user!.");
                 return response;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inesperado ao atualizar o cliente. Tente novamente.");
+                response.SetMessage($"An unexpected error occurred while updating the client. Try again.");
                 return response;
             }
         }
@@ -96,7 +98,7 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
@@ -109,7 +111,7 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro inativar o cliente.");
+                response.SetMessage($"An error occurred inactivating the client.");
                 return response;
             }
         }
@@ -122,7 +124,7 @@ namespace SamsysDemo.BLL.Services
                 Client? client = await _unitOfWork.ClientRepository.GetById(id);
                 if (client is null)
                 {
-                    response.SetMessage($"O cliente não existe. | Id: {id}");
+                    response.SetMessage($"The customer does not exist. | Id: {id}");
                     response.Success = false;
                     return response;
                 }
@@ -135,9 +137,87 @@ namespace SamsysDemo.BLL.Services
             catch (Exception ex)
             {
                 response.Success = false;
-                response.SetMessage($"Ocorreu um erro ativar o cliente.");
+                response.SetMessage($"An error occurred activating the client.");
                 return response;
             }
+        }
+
+        public async Task<MessagingHelper<ListClientPagedDTO>> GetClientsByPage(int pageNumber, int pageSize, string searchTerm)
+        {
+            MessagingHelper<ListClientPagedDTO> response = new();
+            try
+            {
+                var (clients, totalCount) = await _unitOfWork.ClientRepository.GetAllByPage(pageNumber,pageSize, searchTerm);
+                
+                    if (clients == null || clients.Count == 0)
+                {
+                    response.SetMessage("There are no customers.");
+                    response.Success = false;
+                    return response;
+                }
+
+                IList<ClientDTO> clientDTOs = new List<ClientDTO>();
+                foreach (var client in clients)
+                {
+                    var clientDTO = new ClientDTO
+                    {
+                        
+                        Id = client.Id,
+                        Name = client.Name,
+                        IsActive=client.IsActive,
+                        PhoneNumber=client.PhoneNumber,
+                        Birthday=client.Birthday,
+                        
+                    };
+                    clientDTOs.Add(clientDTO);
+                }
+
+                ListClientPagedDTO listClientsDTO = new ListClientPagedDTO
+                {
+                    Items = (List<ClientDTO>)clientDTOs,
+                    TotalRecords = totalCount,
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                };
+
+                response.Obj = listClientsDTO;
+                response.Success = true;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.SetMessage($"An unexpected error occurred while getting the client.");
+                return response;
+            }
+        }
+
+        public async Task<MessagingHelper> CreateClient(NewClientDTO newClientDTO)
+        {
+            MessagingHelper<Client> response = new();
+            try
+            {
+                Client client = new()
+                {
+                    IsActive = true,
+                    PhoneNumber = newClientDTO.PhoneNumber,
+                    IsRemoved = false,
+                    Name = newClientDTO.Name,
+                    Birthday = newClientDTO.Birthday
+                };
+
+                await _unitOfWork.ClientRepository.Insert(client);
+                await _unitOfWork.SaveAsync();
+                response.Success = true;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.SetMessage($"An unexpected error occurred while creating the client. Try again.");
+                return response;
+            }
+
         }
     }
 }
